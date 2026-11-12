@@ -17,7 +17,7 @@ Skill ini mengambil foto stok dari Unsplash untuk kebutuhan visual non-teknis di
 
 ## Setup
 
-Access Key Unsplash disimpan di env var `UNSPLASH_ACCESS_KEY` (sudah di-set via `setx`). Script juga membaca registry user Windows, jadi tidak perlu restart terminal. Mode Demo dibatasi 50 request/jam; satu foto = 2 request (search dihitung sekali per pemanggilan + 1 trigger download per foto).
+Access Key Unsplash disimpan di env var `UNSPLASH_ACCESS_KEY` (Windows: `setx UNSPLASH_ACCESS_KEY <key>`; macOS/Linux: export di profil shell). Di Windows, script juga membaca registry user, jadi tidak perlu restart terminal. Jangan commit key ke repo. Mode Demo dibatasi 50 request/jam; satu foto = 2 request (search dihitung sekali per pemanggilan + 1 trigger download per foto).
 
 Tidak ada dependency; cukup Python 3 standard library.
 
@@ -30,7 +30,7 @@ python .claude/skills/insignia-image-gen/unsplash_fetch.py "<query>" <output_dir
 Contoh, kandidat cover Sesi 6:
 
 ```bash
-python .claude/skills/insignia-image-gen/unsplash_fetch.py "server room" output/sesi-6/assets/photos --count 4 --prefix cover-sesi6
+python .claude/skills/insignia-image-gen/unsplash_fetch.py "server room" output/<Workstream>/Sesi_06_<Judul>/assets/photos --count 4 --prefix cover-sesi6
 ```
 
 Output:
@@ -51,16 +51,16 @@ Keduanya aman diulang dan berhenti rapi saat kuota habis (HTTP 403); jalankan la
 
 ## Cara cepat di deck: `setPhotoDir`
 
-`insignia_deck_lib.js` punya `L.setPhotoDir(dir)`. Panggil sebelum `L.newDeck(...)`: cover memakai `dir/cover.jpg`, section divider ke-N memakai `dir/section-N.jpg`, dengan overlay navy, logo, dan kredit dari `CREDITS.json` otomatis. File yang tidak ada dilewati. Deck Big_Data_Rebuild menyimpan foto di `_build/photos/`.
+`insignia_deck_lib.js` punya `L.setPhotoDir(dir)`. Panggil sebelum `L.newDeck(...)`: cover memakai `dir/cover.jpg`, section divider ke-N memakai `dir/section-N.jpg`, dengan overlay navy, logo, dan kredit dari `CREDITS.json` otomatis. File yang tidak ada dilewati.
 
 ## Menyisipkan manual ke deck (pptxgenjs)
 
 ```javascript
-const credits = require("./output/sesi-6/assets/photos/CREDITS.json");
+const credits = require("./output/<Workstream>/Sesi_06_<Judul>/assets/photos/CREDITS.json");
 const c = credits.find((x) => x.file === "cover-sesi6-02.jpg");
 
 slide.addImage({
-  path: "output/sesi-6/assets/photos/" + c.file,
+  path: "output/<Workstream>/Sesi_06_<Judul>/assets/photos/" + c.file,
   x: 0, y: 0, w: 13.333, h: 7.5,
   sizing: { type: "cover", w: 13.333, h: 7.5 },
 });
@@ -78,6 +78,8 @@ Sesuaikan warna overlay dengan `brand/colors.json` dan ukuran slide dengan layou
 - Foto disimpan di `output/<nama-modul>/assets/photos/`, bukan di root.
 - Foto yang tidak dipakai dihapus beserta entrinya di `CREDITS.json`.
 
-## Keputusan manusia: wajib lewat grill-me
+## Aturan bersama
 
-Setiap kali muncul keputusan yang menjadi hak Fahmi (ruang lingkup, definisi konsep, isi atau angka Brief, prioritas temuan, trade-off waktu kelas, gaya), jangan memutuskan sendiri dan jangan menumpuk pertanyaan di akhir laporan. Langsung panggil skill `grill-me` (Skill tool), selesaikan wawancara dan Decision Log-nya, baru lanjut bekerja. Pemilihan foto final untuk slide termasuk keputusan gaya milik Fahmi; tunjukkan kandidat, biarkan Fahmi memilih. Keputusan teknis murni tetap diputuskan sendiri dan cukup dilaporkan.
+Patuhi `insignia-training-module/references/aturan-bersama.md` (bahasa, kode runnable, data sintetis, brand, path output, dan keputusan manusia lewat `grill-me`).
+
+Pemilihan foto final untuk slide termasuk keputusan gaya milik pengguna: tunjukkan kandidat, biarkan pengguna memilih.

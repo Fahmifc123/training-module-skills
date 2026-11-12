@@ -28,7 +28,9 @@ npm install
 ```
 `package.json` sudah berisi `pptxgenjs`. Library membaca warna dari `brand/colors.json` dan logo dari `brand/logo-light-bg.png` serta `brand/logo-dark-bg.png`.
 
-## Struktur deck standar satu sesi (2 jam)
+## Struktur deck standar sesi live (mode Live Session)
+
+Durasi agenda mengikuti Brief (default 120 menit). Di mode Preparation, deck baru hanya dibuat jika Brief memintanya; deck lama cukup dirujuk.
 
 1. `addCoverSlide`
 2. `addAgendaSlide` (rentang waktu dan durasi, total 120 menit)
@@ -74,20 +76,18 @@ const path = require("path");
 const L = require("./insignia_deck_lib.js");
 
 async function main() {
-  const pptx = L.newDeck("Big Data - Sesi 1");
+  const pptx = L.newDeck("Contoh Workstream - Sesi 1");
   L.addCoverSlide(pptx, {
-    title: "Big Data",
-    subtitle: "Sesi 1 - Intro Classical Data Processing",
-    description: "Cara data diproses sebelum era big data, dan di mana batasnya.",
+    title: "Contoh Workstream",
+    subtitle: "Sesi 1 - Judul Sesi",
+    description: "Satu kalimat tentang isi sesi.",
     meta: [
-      { label: "Hari", value: "Rabu, 11 November 2026" },
-      { label: "Slot siang", value: "13.30 - 15.30 WIB" },
-      { label: "Slot sore", value: "15.30 - 17.30 WIB" },
-      { label: "Lokasi", value: "Kantor Insignia / online" },
+      { label: "Hari", value: "Isi dari Brief" },
+      { label: "Durasi", value: "120 menit" },
     ],
   });
-  L.addThankYouSlide(pptx, { contact: "Kontak: Fahmi, Mentor Data & AI" });
-  await L.save(pptx, path.join(__dirname, "output", "Big_Data", "Sesi_01_Intro_Classical_Data_Processing", "1_PPT", "Intro_Classical_Data_Processing.pptx"));
+  L.addThankYouSlide(pptx, { contact: "Kontak: Mentor Data & AI" });
+  await L.save(pptx, path.join(__dirname, "output", "Contoh_Workstream", "Sesi_01_Judul_Sesi", "1_PPT", "Judul_Sesi.pptx"));
 }
 main();
 ```
@@ -96,11 +96,11 @@ main();
 
 - Semua slide dibuat lewat fungsi library, tidak ada warna atau font di luar `brand/colors.json`.
 - Variasi komponen: tidak ada lebih dari 2 slide berurutan dengan komponen yang sama.
-- Total durasi agenda 120 menit dan cocok dengan alur slide.
+- Total durasi agenda sama dengan Brief dan cocok dengan alur slide.
 - Kode di code slide sudah dijalankan dan output-nya cocok dengan checkpoint dan Answer Key.
 - Deck dirender ke gambar (LibreOffice ke PDF ke PNG) dan dicek: tidak ada teks terpotong, tumpang tindih, atau kata terpecah di dua baris.
-- File output ditulis ke `output/<program>/<sesi>/1_PPT/`.
+- File output ditulis ke `output/<Workstream>/Sesi_NN_<Judul>/1_PPT/`.
 
-## Keputusan manusia: wajib lewat grill-me
+## Aturan bersama
 
-Setiap kali muncul keputusan yang menjadi hak Fahmi (ruang lingkup, definisi konsep, isi atau angka Brief, prioritas temuan, trade-off waktu kelas, gaya), jangan memutuskan sendiri dan jangan menumpuk pertanyaan di akhir laporan. Langsung panggil skill `grill-me` (Skill tool), selesaikan wawancara dan Decision Log-nya, baru lanjut bekerja. Keputusan teknis murni tetap diputuskan sendiri dan cukup dilaporkan.
+Patuhi `insignia-training-module/references/aturan-bersama.md` (bahasa, kode runnable, data sintetis, brand, path output, dan keputusan manusia lewat `grill-me`).

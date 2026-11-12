@@ -145,6 +145,6 @@ module.exports = { batchRender };
 - Warna di hasil render konsisten dengan `brand/colors.json`.
 - File output ditulis ke `output/<nama-modul>/`.
 
-## Keputusan manusia: wajib lewat grill-me
+## Aturan bersama
 
-Setiap kali muncul keputusan yang menjadi hak Fahmi (ruang lingkup, definisi konsep, isi atau angka Brief, prioritas temuan, trade-off waktu kelas, gaya), jangan memutuskan sendiri dan jangan menumpuk pertanyaan di akhir laporan. Langsung panggil skill `grill-me` (Skill tool), selesaikan wawancara dan Decision Log-nya, baru lanjut bekerja. Keputusan teknis murni tetap diputuskan sendiri dan cukup dilaporkan.
+Patuhi `insignia-training-module/references/aturan-bersama.md` (bahasa, kode runnable, data sintetis, brand, path output, dan keputusan manusia lewat `grill-me`).
