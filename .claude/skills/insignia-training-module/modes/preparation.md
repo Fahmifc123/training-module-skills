@@ -6,7 +6,7 @@ Untuk modul self-study yang dibagikan dan dikerjakan mandiri (misalnya modul onb
 
 ```
 output/<Workstream>/<Nama_Modul>/
-  1_Modul_Sheet/      <Nama_Modul>.xlsx
+  1_Modul_Sheet/      <Nama_Program>_Modul_Preparation_Self_Study.xlsx
   2_Materi_Baru/      Panduan_Bagian_NN_<Judul>.docx, skrip dan file pendukung per bagian
   3_Materi_Rujukan/   salinan materi lama yang dirujuk + Daftar_Materi_Rujukan.md
   4_Mentor_Only/      Answer_Key.md, Rubrik_Penilaian.md, referensi solusi (DSL, kode)
@@ -14,13 +14,9 @@ output/<Workstream>/<Nama_Modul>/
 
 ## Fase 1 - Modul Sheet
 
-Panggil `insignia-xlsx-tracker` dengan **pola Modul Sheet**. Satu baris per bagian. Kolom dan tab mengikuti bidang "Spesifikasi modul sheet" di Brief. Bila Brief tidak menyebut, pakai default:
+Panggil `insignia-xlsx-tracker` dengan **pola Modul Sheet** (format DE): tab `Training Modules` 13 kolom dan tab `Legend`. Struktur modul, sub modul, Mini Project, dan Test Modul diambil dari Brief apa adanya. Nilai Category, Difficulty, Material Source, dan Status mengikuti nilai baku di skill tersebut.
 
-- Tab `Start here`: tujuan modul, target peserta, cara mengerjakan, aturan (misalnya pemakaian AI assistant), kontak mentor.
-- Tab `Modul`: No, Blok, Bagian, Topics, Objective, Deliverable, Bukti Selesai, Dataset / Sumber, Materi, Kriteria Cek Mentor, Status, Catatan.
-- Tab `Materi`: daftar semua file materi (rujukan dan baru) beserta lokasi foldernya.
-
-Isi sel Topics dan Deliverable memakai baris baru dengan awalan bullet, sama seperti contoh kurikulum yang ada.
+Kolom link (PPT, Video, External, Referensi Section) diisi hanya dengan link atau nama file yang disebut Brief. Link yang belum ada dibiarkan kosong dan dilaporkan di ringkasan fase.
 
 ## Fase 2 - Materi Baru
 
@@ -29,7 +25,7 @@ Untuk setiap bagian yang di Brief ditandai `Materi: baru`:
 - Kode atau skrip ditulis lengkap, dijalankan, dan hasilnya dicatat untuk answer key.
 - Diagram dibuat lewat `html-to-png-render`.
 
-Nama file harus sama persis dengan isi kolom Materi di modul sheet.
+Nama file harus sama persis dengan isi kolom Internal Link PPT di modul sheet.
 
 ## Fase 3 - Materi Rujukan
 
@@ -40,15 +36,15 @@ Untuk setiap bagian yang ditandai `Materi: dipakai ulang`:
 
 ## Fase 4 - Mentor Only
 
-- `Answer_Key.md`: hasil yang diharapkan untuk setiap Bukti Selesai dan CHECKPOINT.
-- `Rubrik_Penilaian.md`: kriteria dan skala untuk setiap deliverable proyek.
+- `Answer_Key.md`: hasil yang diharapkan untuk setiap deliverable, CHECKPOINT, dan soal Test Modul.
+- `Rubrik_Penilaian.md`: kriteria dan skala untuk setiap Mini Project.
 - Referensi solusi (DSL, kode) yang tidak dibagikan ke peserta.
 
 ## Definition of Done
 
-- Setiap bagian di modul sheet punya Deliverable, Bukti Selesai, dan Kriteria Cek Mentor yang bisa diverifikasi.
-- Setiap file yang disebut di kolom Materi benar-benar ada di `2_Materi_Baru/` atau `3_Materi_Rujukan/`.
+- Setiap sub modul di modul sheet punya Learning Objectives dan Output / Deliverable yang bisa diverifikasi; setiap modul diakhiri Test Modul.
+- Setiap file di kolom Internal Link PPT benar-benar ada di `2_Materi_Baru/` atau `3_Materi_Rujukan/`.
 - Semua skrip baru dijalankan tanpa error, hasilnya cocok dengan Answer Key.
-- Setiap Bukti Selesai punya jawaban di Answer Key, dan setiap deliverable proyek punya rubrik.
+- Setiap deliverable dan Test Modul punya jawaban di Answer Key, dan setiap Mini Project punya rubrik.
 - Modul sheet dibuka dan dicek: wrap text rapi, tidak ada sel terpotong.
 - Aturan bersama terpenuhi.

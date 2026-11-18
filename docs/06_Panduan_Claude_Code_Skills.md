@@ -1,9 +1,9 @@
-# Panduan Claude Code dengan Skill insignia-training-assets
+# Panduan Claude Code dengan Skill training-module-skills
 
-Dipakai setelah Brief disetujui di Project. Claude Code membuat file jadi dari Brief. Kit disimpan di repo GitHub `insignia-training-assets`.
+Dipakai setelah Brief disetujui di Project. Claude Code membuat file jadi dari Brief. Kit disimpan di repo GitHub `training-module-skills`.
 
 ## 1. Setup satu kali
-1. Clone repo: `git clone <url-repo> insignia-training-assets`, lalu masuk ke folder tersebut.
+1. Clone repo: `git clone <url-repo> training-module-skills`, lalu masuk ke folder tersebut.
 2. Jalankan `npm install` dan `pip install python-docx openpyxl`. Playwright hanya jika butuh render HTML ke PNG.
 3. Jalankan `claude` dari root repo. Skill terdeteksi otomatis dari `.claude/skills/`.
 4. Untuk mengambil versi terbaru kit: `git pull`.

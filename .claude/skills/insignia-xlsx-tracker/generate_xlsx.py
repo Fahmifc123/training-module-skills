@@ -20,9 +20,47 @@ from openpyxl.worksheet.datavalidation import DataValidation
 REPO_ROOT = Path(__file__).resolve().parents[3]
 COLORS = json.loads((REPO_ROOT / "brand" / "colors.json").read_text(encoding="utf-8"))
 FONT = COLORS.get("font_body", "Arial")
-STATUS_VALUES = ["Belum Mulai", "Proses", "Selesai"]
 THIN = Side(style="thin", color="D0D0D0")
 BORDER = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
+
+# Nilai baku. Status dipakai di kedua pola agar konsisten dengan Legend.
+STATUS = [
+    ("Belum Mulai", "Module belum dimulai", "surface_muted"),
+    ("Sedang Berjalan", "Module sedang dikerjakan", "warning"),
+    ("Selesai", "Module selesai dan deliverable sudah dikumpulkan", "success"),
+]
+CATEGORY = [
+    ("Concept", "Materi teori: baca, pahami konsep"),
+    ("Setup", "Konfigurasi environment dan tools"),
+    ("Hands-on", "Latihan praktek mandiri: ikuti langkah yang diberikan"),
+    ("Project", "Mini project mandiri: implementasikan tanpa panduan step-by-step"),
+    ("Use Case", "Hands-on lanjutan dengan use case industri"),
+    ("Capstone", "Proyek akhir end-to-end"),
+    ("Test", "Quiz konsep dan penilaian rubrik di akhir modul"),
+    ("Review / Tanya Jawab", "Sesi diskusi on-demand dengan mentor setelah selesai modul"),
+]
+DIFFICULTY = [
+    ("Beginner", "Tanpa prasyarat di luar modul sebelumnya"),
+    ("Intermediate", "Butuh pemahaman sub modul sebelumnya"),
+    ("Advanced", "Menggabungkan beberapa konsep, minim panduan"),
+    ("All Levels", "Bisa diikuti semua level"),
+    ("TBD", "Belum ditentukan"),
+]
+SOURCE = [
+    ("Internal", "Materi dari mentor (PPT, video, modul)"),
+    ("External", "Course atau dokumentasi luar (Udemy, docs resmi)"),
+    ("Blended", "Gabungan materi internal dan external"),
+]
+
+# (header, key, lebar)
+MODUL_COLUMNS = [
+    ("Modul", "modul", 24), ("Sub Modul", "sub_modul", 28), ("Materi", "materi", 34),
+    ("Category", "category", 14), ("Learning Objectives", "objectives", 54),
+    ("Difficulty", "difficulty", 13), ("Output / Deliverable", "deliverable", 40),
+    ("Material Source", "source", 15), ("Internal Link PPT", "ppt", 26),
+    ("Video Course Internal Link", "video", 28), ("External Link (Udemy, dll)", "external", 40),
+    ("Referensi Section Udemy", "referensi", 46), ("Status", "status", 16),
+]
 
 
 def hex_(name: str) -> str:
@@ -33,64 +71,44 @@ def fill(name: str) -> PatternFill:
     return PatternFill(start_color=hex_(name), end_color=hex_(name), fill_type="solid")
 
 
+def font(size=10, bold=False, color="text_primary", italic=False) -> Font:
+    return Font(name=FONT, size=size, bold=bold, italic=italic, color=hex_(color))
+
+
 def style_header(ws, row: int, n_cols: int) -> None:
     for col in range(1, n_cols + 1):
         cell = ws.cell(row=row, column=col)
         cell.fill = fill("primary")
-        cell.font = Font(name=FONT, color=hex_("text_on_dark"), bold=True, size=11)
+        cell.font = font(bold=True, color="text_on_dark")
         cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
         cell.border = BORDER
-    ws.freeze_panes = f"A{row + 1}"
+    ws.row_dimensions[row].height = 34
+    ws.freeze_panes = f"A{row + 1}"  # string, agar tidak membuat sel kosong di baris data
 
 
-def style_body(ws, first_row: int, last_row: int, n_cols: int, wrap: bool) -> None:
-    for r in range(first_row, last_row + 1):
-        for c in range(1, n_cols + 1):
-            cell = ws.cell(row=r, column=c)
-            cell.font = Font(name=FONT, size=10, color=hex_("text_primary"))
-            cell.alignment = Alignment(vertical="top", wrap_text=wrap)
-            cell.border = BORDER
-        if r % 2 == 0:
-            for c in range(1, n_cols + 1):
-                ws.cell(row=r, column=c).fill = fill("surface")
+def estimate_height(values, widths) -> float:
+    lines = 1
+    for value, width in zip(values, widths):
+        if value in (None, ""):
+            continue
+        chars = max(int(width) - 2, 1)
+        n = sum(max(1, -(-len(line) // chars)) for line in str(value).split("\n"))
+        lines = max(lines, n)
+    return min(14 * lines + 8, 409)
 
 
-def auto_width(ws, n_cols: int, max_width: int = 45) -> None:
-    for col_idx in range(1, n_cols + 1):
-        letter = get_column_letter(col_idx)
-        longest = 0
-        for cell in ws[letter]:
-            if cell.value is not None:
-                longest = max(longest, max(len(line) for line in str(cell.value).split("\n")))
-        ws.column_dimensions[letter].width = max(10, min(longest + 3, max_width))
-
-
-def fit_row_heights(ws, first_row: int, last_row: int, n_cols: int) -> None:
-    """Perkirakan tinggi baris dari jumlah baris teks setelah wrap."""
-    for r in range(first_row, last_row + 1):
-        lines = 1
-        for c in range(1, n_cols + 1):
-            value = ws.cell(row=r, column=c).value
-            if value is None:
-                continue
-            width = ws.column_dimensions[get_column_letter(c)].width or 10
-            chars = max(int(width) - 2, 1)
-            n = sum(max(1, -(-len(line) // chars)) for line in str(value).split("\n"))
-            lines = max(lines, n)
-        ws.row_dimensions[r].height = min(15 * lines + 4, 409)
-
-
-def add_status_column(ws, col_letter: str, first_row: int, last_row: int) -> None:
-    dv = DataValidation(type="list", formula1='"' + ",".join(STATUS_VALUES) + '"', allow_blank=True)
+def add_list_validation(ws, values, rng: str) -> None:
+    dv = DataValidation(type="list", formula1='"' + ",".join(values) + '"', allow_blank=True)
     ws.add_data_validation(dv)
-    rng = f"{col_letter}{first_row}:{col_letter}{last_row}"
     dv.add(rng)
-    for status, color in zip(STATUS_VALUES, ["error", "warning", "success"]):
+
+
+def add_status_format(ws, rng: str) -> None:
+    for status, _, color in STATUS:
+        text_color = "text_primary" if color == "surface_muted" else "text_on_dark"
         ws.conditional_formatting.add(
-            rng,
-            CellIsRule(operator="equal", formula=[f'"{status}"'], fill=fill(color),
-                       font=Font(name=FONT, color=hex_("text_on_dark"), bold=True)),
-        )
+            rng, CellIsRule(operator="equal", formula=[f'"{status}"'], fill=fill(color),
+                            font=font(bold=True, color=text_color)))
 
 
 def bullets(value) -> str:
@@ -100,23 +118,20 @@ def bullets(value) -> str:
     return "" if value is None else str(value)
 
 
-def write_table(ws, headers, rows, status_header=None, wrap=False, widths=None) -> None:
-    ws.append(headers)
-    style_header(ws, 1, len(headers))
-    for row in rows:
-        ws.append([bullets(v) for v in row])
-    last = ws.max_row
-    style_body(ws, 2, last, len(headers), wrap)
-    if widths:
-        for i, w in enumerate(widths, start=1):
-            ws.column_dimensions[get_column_letter(i)].width = w
-    else:
-        auto_width(ws, len(headers))
-    if wrap:
-        fit_row_heights(ws, 2, last, len(headers))
-    if status_header and status_header in headers and last >= 2:
-        letter = get_column_letter(headers.index(status_header) + 1)
-        add_status_column(ws, letter, 2, last)
+def page_setup(ws) -> None:
+    ws.page_setup.orientation = "landscape"
+    ws.page_setup.paperSize = ws.PAPERSIZE_A4
+    ws.sheet_properties.pageSetUpPr.fitToPage = True
+    ws.page_setup.fitToWidth = 1
+    ws.page_setup.fitToHeight = 0
+
+
+def save(wb, output: Path) -> None:
+    for ws in wb.worksheets:
+        page_setup(ws)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    wb.save(output)
+    print(f"Tersimpan: {output}")
 
 
 # ---------- Pola 1: Tracker ----------
@@ -126,78 +141,154 @@ def build_tracker(spec: dict, output: Path) -> None:
     wb.remove(wb.active)
     for sheet in spec["sheets"]:
         ws = wb.create_sheet(sheet["name"][:31])
-        write_table(ws, sheet["headers"], sheet["rows"], status_header=sheet.get("status_column"))
+        headers = sheet["headers"]
+        ws.append(headers)
+        style_header(ws, 1, len(headers))
+        for row in sheet["rows"]:
+            ws.append([bullets(v) for v in row])
+        last = ws.max_row
+        for r in range(2, last + 1):
+            for c in range(1, len(headers) + 1):
+                cell = ws.cell(row=r, column=c)
+                cell.font = font()
+                cell.alignment = Alignment(vertical="top")
+                cell.border = BORDER
+                if r % 2 == 0:
+                    cell.fill = fill("surface")
+        for c in range(1, len(headers) + 1):
+            letter = get_column_letter(c)
+            longest = max(len(str(x.value)) for x in ws[letter] if x.value is not None)
+            ws.column_dimensions[letter].width = max(10, min(longest + 3, 45))
         for formula_col in sheet.get("formula_columns", []):
-            col = sheet["headers"].index(formula_col["header"]) + 1
-            for r in range(2, ws.max_row + 1):
+            col = headers.index(formula_col["header"]) + 1
+            for r in range(2, last + 1):
                 ws.cell(row=r, column=col).value = formula_col["formula"].replace("{row}", str(r))
+        status_header = sheet.get("status_column")
+        if status_header in headers and last >= 2:
+            letter = get_column_letter(headers.index(status_header) + 1)
+            rng = f"{letter}2:{letter}{last}"
+            add_list_validation(ws, [s for s, _, _ in STATUS], rng)
+            add_status_format(ws, rng)
     save(wb, output)
 
 
-# ---------- Pola 2: Modul Sheet ----------
+# ---------- Pola 2: Modul Sheet (format DE - Modul Preparation) ----------
 
-DEFAULT_MODUL_COLUMNS = [
-    ("No", "no", 6), ("Blok", "blok", 16), ("Bagian", "bagian", 24),
-    ("Topics", "topics", 42), ("Objective", "objective", 36),
-    ("Deliverable", "deliverable", 42), ("Bukti Selesai", "bukti", 30),
-    ("Dataset / Sumber", "dataset", 28), ("Materi", "materi", 32),
-    ("Kriteria Cek Mentor", "kriteria", 36), ("Status", "status", 14), ("Catatan", "catatan", 24),
-]
+def validate_modul_spec(spec: dict) -> None:
+    allowed = {
+        "category": [c for c, _ in CATEGORY], "difficulty": [d for d, _ in DIFFICULTY],
+        "source": [s for s, _ in SOURCE], "status": [s for s, _, _ in STATUS],
+    }
+    errors = []
+    for modul in spec["modul"]:
+        for row in modul["sub_modul"]:
+            row.setdefault("status", "Belum Mulai")
+            for key, values in allowed.items():
+                if row.get(key) and row[key] not in values:
+                    errors.append(f"{modul['nama']} / {row.get('sub_modul')}: {key} '{row[key]}' "
+                                  f"tidak ada di {values}")
+            for key in ("sub_modul", "materi", "category", "objectives", "difficulty", "source"):
+                if not row.get(key):
+                    errors.append(f"{modul['nama']} / {row.get('sub_modul')}: kolom {key} kosong")
+            if row.get("source") in ("Internal", "Blended") and not (row.get("ppt") or row.get("video")):
+                errors.append(f"{modul['nama']} / {row['sub_modul']}: source {row['source']} "
+                              "tetapi Internal Link PPT dan Video kosong")
+            if row.get("source") in ("External", "Blended") and not row.get("external"):
+                errors.append(f"{modul['nama']} / {row['sub_modul']}: source {row['source']} "
+                              "tetapi External Link kosong")
+        if modul["sub_modul"][-1].get("category") != "Test":
+            errors.append(f"{modul['nama']}: baris terakhir modul harus kategori Test")
+    if errors:
+        raise SystemExit("Spec modul sheet tidak valid:\n- " + "\n- ".join(errors))
 
 
-def build_start_here(ws, info: dict) -> None:
-    ws.column_dimensions["A"].width = 26
-    ws.column_dimensions["B"].width = 90
-    ws["A1"] = info.get("judul", "")
-    ws["A1"].font = Font(name=FONT, size=18, bold=True, color=hex_("primary"))
-    ws["A2"] = info.get("subjudul", "")
-    ws["A2"].font = Font(name=FONT, size=11, italic=True, color=hex_("text_secondary"))
-    row = 4
-    for label, value in info.get("items", []):
-        a, b = ws.cell(row=row, column=1, value=label), ws.cell(row=row, column=2, value=bullets(value))
-        a.font = Font(name=FONT, size=10, bold=True, color=hex_("accent"))
-        b.font = Font(name=FONT, size=10, color=hex_("text_primary"))
-        a.alignment = Alignment(vertical="top")
-        b.alignment = Alignment(vertical="top", wrap_text=True)
-        n = sum(max(1, -(-len(line) // 85)) for line in bullets(value).split("\n"))
-        ws.row_dimensions[row].height = 15 * n + 4
+def build_training_modules(ws, spec: dict) -> None:
+    headers = [h for h, _, _ in MODUL_COLUMNS]
+    widths = [w for _, _, w in MODUL_COLUMNS]
+    ws.append(headers)
+    style_header(ws, 1, len(headers))
+    for i, w in enumerate(widths, start=1):
+        ws.column_dimensions[get_column_letter(i)].width = w
+
+    data_rows = []
+    for m_idx, modul in enumerate(spec["modul"]):
+        if m_idx > 0:
+            ws.append([])  # satu baris kosong antar modul
+        for row in modul["sub_modul"]:
+            values = [modul["nama"] if key == "modul" else bullets(row.get(key, ""))
+                      for _, key, _ in MODUL_COLUMNS]
+            ws.append(values)
+            r = ws.max_row
+            data_rows.append(r)
+            is_test = row.get("category") == "Test"
+            for c in range(1, len(headers) + 1):
+                cell = ws.cell(row=r, column=c)
+                cell.font = font(bold=(c <= 2 and is_test))
+                cell.alignment = Alignment(vertical="top", wrap_text=True)
+                cell.border = BORDER
+                cell.fill = fill("tint_accent" if is_test else "tint_secondary" if c <= 2 else "background")
+            ws.row_dimensions[r].height = estimate_height(values, widths)
+
+    last = ws.max_row
+    col = {key: get_column_letter(i) for i, (_, key, _) in enumerate(MODUL_COLUMNS, start=1)}
+    add_list_validation(ws, [c for c, _ in CATEGORY], f"{col['category']}2:{col['category']}{last}")
+    add_list_validation(ws, [d for d, _ in DIFFICULTY], f"{col['difficulty']}2:{col['difficulty']}{last}")
+    add_list_validation(ws, [s for s, _ in SOURCE], f"{col['source']}2:{col['source']}{last}")
+    status_rng = f"{col['status']}2:{col['status']}{last}"
+    add_list_validation(ws, [s for s, _, _ in STATUS], status_rng)
+    add_status_format(ws, status_rng)
+    ws.auto_filter.ref = f"A1:{get_column_letter(len(headers))}{last}"
+
+
+def build_legend(ws, spec: dict) -> None:
+    ws.column_dimensions["A"].width = 32
+    ws.column_dimensions["B"].width = 80
+    row = 1
+
+    def section(title: str, items, title_size=10) -> None:
+        nonlocal row
+        ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=2)
+        cell = ws.cell(row=row, column=1, value=title)
+        cell.fill = fill("primary")
+        cell.font = font(size=title_size, bold=True, color="text_on_dark")
+        cell.alignment = Alignment(vertical="center")
+        ws.row_dimensions[row].height = 22
         row += 1
+        for key, desc in items:
+            a = ws.cell(row=row, column=1, value=key)
+            b = ws.cell(row=row, column=2, value=desc)
+            a.font, b.font = font(bold=True), font()
+            a.fill = fill("tint_secondary")
+            for c in (a, b):
+                c.alignment = Alignment(vertical="top", wrap_text=True)
+                c.border = BORDER
+            row += 1
+        row += 1
+
+    ws.merge_cells("A1:B1")
+    title = ws.cell(row=1, column=1, value=spec.get("legend_title", f"Keterangan & Panduan Penggunaan - {spec['judul']}"))
+    title.fill = fill("primary")
+    title.font = font(size=12, bold=True, color="text_on_dark")
+    ws.row_dimensions[1].height = 26
+    row = 3
+    section("KATEGORI MODULE", CATEGORY)
+    section("STATUS PROGRESS", [(s, d) for s, d, _ in STATUS])
+    section("DIFFICULTY", DIFFICULTY)
+    section("MATERIAL SOURCE", SOURCE)
+    for extra in spec.get("legend_extra", []):
+        section(extra["title"].upper(), extra["rows"])
+    if spec.get("alur_belajar"):
+        section("ALUR BELAJAR", [(f"Step {i}", s) for i, s in enumerate(spec["alur_belajar"], start=1)])
 
 
 def build_modul_sheet(spec: dict, output: Path) -> None:
+    validate_modul_spec(spec)
     wb = Workbook()
-    build_start_here(wb.active, spec["start_here"])
-    wb.active.title = "Start here"
-
-    columns = DEFAULT_MODUL_COLUMNS
-    if "columns" in spec:
-        columns = [(c["header"], c["key"], c.get("width", 24)) for c in spec["columns"]]
-    ws = wb.create_sheet("Modul")
-    rows = []
-    for i, bagian in enumerate(spec["bagian"], start=1):
-        bagian.setdefault("no", i)
-        bagian.setdefault("status", "Belum Mulai")
-        rows.append([bagian.get(key, "") for _, key, _ in columns])
-    write_table(ws, [h for h, _, _ in columns], rows, status_header="Status", wrap=True,
-                widths=[w for _, _, w in columns])
-
-    if spec.get("materi"):
-        wm = wb.create_sheet("Materi")
-        write_table(wm, ["File", "Jenis", "Lokasi", "Dipakai di Bagian"],
-                    [[m["file"], m["jenis"], m["lokasi"], m["bagian"]] for m in spec["materi"]])
+    ws = wb.active
+    ws.title = spec.get("sheet_name", "Training Modules")
+    build_training_modules(ws, spec)
+    build_legend(wb.create_sheet("Legend"), spec)
     save(wb, output)
-
-
-def save(wb, output: Path) -> None:
-    for ws in wb.worksheets:
-        ws.page_setup.orientation = "landscape"
-        ws.page_setup.paperSize = ws.PAPERSIZE_A4
-        ws.sheet_properties.pageSetUpPr.fitToPage = True
-        ws.page_setup.fitToWidth = 1
-        ws.page_setup.fitToHeight = 0
-    output.parent.mkdir(parents=True, exist_ok=True)
-    wb.save(output)
-    print(f"Tersimpan: {output}")
 
 
 # ---------- Demo (data sintetis) ----------
@@ -205,30 +296,50 @@ def save(wb, output: Path) -> None:
 DEMO_TRACKER = {
     "sheets": [{
         "name": "Tracker",
-        "headers": ["No", "Nama Peserta", "Track", "Modul", "Status", "Progress (%)", "Catatan"],
+        "headers": ["No", "Nama Peserta", "Track", "Modul", "Status", "Selesai", "Total", "Progress (%)"],
         "status_column": "Status",
-        "rows": [[1, "Peserta A", "Data Engineering", "Modul 1", "Selesai", 100, ""],
-                 [2, "Peserta B", "Data Science", "Modul 1", "Proses", 60, ""],
-                 [3, "Peserta C", "Data Engineering", "Modul 2", "Belum Mulai", 0, ""]],
+        "rows": [[1, "Peserta A", "Data Engineering", "Modul 1", "Selesai", 8, 8, None],
+                 [2, "Peserta B", "Data Science", "Modul 1", "Sedang Berjalan", 5, 8, None],
+                 [3, "Peserta C", "Data Engineering", "Modul 2", "Belum Mulai", 0, 13, None]],
+        "formula_columns": [{"header": "Progress (%)", "formula": "=ROUND(F{row}/G{row}*100,0)"}],
     }]
 }
 
 DEMO_MODUL = {
-    "start_here": {
-        "judul": "Contoh Modul Preparation",
-        "subjudul": "Data sintetis untuk menguji pola modul sheet",
-        "items": [["Target peserta", "Junior dan intern"],
-                  ["Cara mengerjakan", ["Kerjakan bagian berurutan", "Isi kolom Status di tab Modul", "Lampirkan bukti selesai ke mentor"]]],
-    },
-    "bagian": [{
-        "blok": "Foundations", "bagian": "Orientasi",
-        "topics": ["Konsep A", "Konsep B", "Navigasi tool"],
-        "objective": "Menjelaskan konsep dasar dan menavigasi tool.",
-        "deliverable": ["Akun aktif", "Latihan level 1 selesai"],
-        "bukti": "Screenshot hasil latihan", "dataset": "Teks contoh sintetis",
-        "materi": "Contoh_Materi.pptx", "kriteria": "Output sesuai checkpoint level 1",
-    }],
-    "materi": [{"file": "Contoh_Materi.pptx", "jenis": "Rujukan", "lokasi": "3_Materi_Rujukan/", "bagian": "1"}],
+    "judul": "Contoh Program",
+    "alur_belajar": ["Peserta belajar mandiri (materi internal atau external)",
+                     "Peserta menghubungi mentor untuk tanya jawab dan review (on-demand)",
+                     "Mini project dikerjakan mandiri, lalu Test Modul"],
+    "legend_extra": [{"title": "Mode Belajar", "rows": [["Self-study", "Belajar mandiri dari materi yang tercantum"]]}],
+    "modul": [
+        {"nama": "Modul 1: Contoh Fondasi", "sub_modul": [
+            {"sub_modul": "1.1 Konsep Dasar", "materi": "Intro: peran, ekosistem, istilah inti",
+             "category": "Concept", "objectives": "Memahami peran dan ekosistem; membedakan istilah inti",
+             "difficulty": "Beginner", "deliverable": "Ringkasan satu halaman", "source": "Internal",
+             "ppt": "Contoh_1.1_Intro.pptx"},
+            {"sub_modul": "1.2 Setup Environment", "materi": "Setup tool lokal",
+             "category": "Setup", "objectives": ["Install tool", "Verifikasi instalasi"],
+             "difficulty": "Beginner", "deliverable": "Environment siap", "source": "External",
+             "external": "https://docs.python.org/3/tutorial/venv.html",
+             "referensi": "Bagian 12.1 - 12.3"},
+            {"sub_modul": "1.3 Mini Project - Fondasi", "materi": "Mini project end-to-end",
+             "category": "Project", "objectives": "Menggabungkan 1.1 dan 1.2 dalam satu pipeline kecil",
+             "difficulty": "Intermediate", "deliverable": "Repo dan README", "source": "Internal",
+             "ppt": "Contoh_1.3_Mini_Project.pptx"},
+            {"sub_modul": "Test Modul 1", "materi": "Quiz Konsep (1.1-1.2) + Rubrik Mini Project (1.3)",
+             "category": "Test", "objectives": "Validasi pemahaman konsep Modul 1",
+             "difficulty": "Intermediate", "source": "Internal", "ppt": "Contoh_Test_Modul1.pptx"},
+        ]},
+        {"nama": "Modul 2: Contoh Lanjutan", "sub_modul": [
+            {"sub_modul": "2.1 Konsep Lanjutan", "materi": "Pola lanjutan", "category": "Concept",
+             "objectives": "Memahami pola lanjutan", "difficulty": "Intermediate",
+             "deliverable": "Diagram pola", "source": "Blended", "ppt": "Contoh_2.1.pptx",
+             "external": "https://example.com/course", "status": "Sedang Berjalan"},
+            {"sub_modul": "Test Modul 2", "materi": "Quiz Konsep (2.1)", "category": "Test",
+             "objectives": "Validasi pemahaman Modul 2", "difficulty": "Intermediate",
+             "source": "Internal", "ppt": "Contoh_Test_Modul2.pptx"},
+        ]},
+    ],
 }
 
 

@@ -1,6 +1,6 @@
 ---
 name: insignia-xlsx-tracker
-description: Buat atau update file Excel (.xlsx) Insignia memakai openpyxl dengan dua pola. Pola Tracker untuk operasional training (alokasi akun, kehadiran, progres peserta). Pola Modul Sheet untuk modul preparation self-study (satu baris per bagian berisi topics, objective, deliverable, bukti selesai, materi, kriteria cek mentor). Pakai skill ini setiap kali diminta membuat tracker Excel atau modul sheet Insignia.
+description: Buat atau update file Excel (.xlsx) Insignia memakai openpyxl dengan dua pola. Pola Tracker untuk operasional training (alokasi akun, kehadiran, progres peserta). Pola Modul Sheet untuk modul preparation self-study yang dibagikan ke HR (format DE: tab Training Modules 13 kolom dan tab Legend). Pakai skill ini setiap kali diminta membuat tracker Excel atau modul sheet Insignia.
 ---
 
 # Insignia Excel (Tracker dan Modul Sheet)
@@ -19,7 +19,7 @@ Warna dan font dibaca otomatis dari `brand/colors.json` di root repo.
 ## Aturan konten
 
 - Header Title Case, tanpa singkatan ambigu.
-- Status hanya `Belum Mulai`, `Proses`, `Selesai`, berupa dropdown dengan conditional formatting. Tanpa emoji.
+- Status hanya `Belum Mulai`, `Sedang Berjalan`, `Selesai`, berupa dropdown dengan conditional formatting. Tanpa emoji.
 - Kolom yang menghitung (persentase, total) memakai formula Excel asli, bukan nilai hasil hitung manual.
 - Istilah teknis tetap bahasa Inggris, label lain Bahasa Indonesia.
 
@@ -31,7 +31,7 @@ Warna dan font dibaca otomatis dari `brand/colors.json` di root repo.
     "name": "Tracker",
     "headers": ["No", "Nama Peserta", "Track", "Status", "Selesai", "Total", "Progress (%)"],
     "status_column": "Status",
-    "rows": [[1, "Peserta A", "Data Engineering", "Proses", 3, 10, null]],
+    "rows": [[1, "Peserta A", "Data Engineering", "Sedang Berjalan", 3, 10, null]],
     "formula_columns": [{"header": "Progress (%)", "formula": "=E{row}/F{row}*100"}]
   }]
 }
@@ -39,36 +39,45 @@ Warna dan font dibaca otomatis dari `brand/colors.json` di root repo.
 
 Beberapa kategori data dipisah per sheet (misalnya "DE Track" dan "DS Track").
 
-## Pola 2 - Modul Sheet
+## Pola 2 - Modul Sheet (format Modul Preparation)
 
-Dipakai oleh mode Preparation di `insignia-training-module`. Hasilnya tiga tab:
-- `Start here`: judul, subjudul, dan pasangan label-isi (tujuan, target peserta, cara mengerjakan, aturan, kontak).
-- `Modul`: satu baris per bagian, wrap text, tinggi baris menyesuaikan isi, kolom Status berupa dropdown.
-- `Materi` (opsional): daftar file materi dan lokasinya.
+Dipakai oleh mode Preparation di `insignia-training-module`. Formatnya mengikuti modul sheet DE yang sudah dibagikan ke HR.
+
+**Tab `Training Modules`**, 13 kolom tetap: Modul, Sub Modul, Materi, Category, Learning Objectives, Difficulty, Output / Deliverable, Material Source, Internal Link PPT, Video Course Internal Link, External Link (Udemy, dll), Referensi Section Udemy, Status.
+
+Pola baris per modul: sub modul bernomor (1.1, 1.2, ...), Mini Project (kategori Project), lalu **Test Modul N** (kategori Test) sebagai baris terakhir, kemudian satu baris kosong sebelum modul berikutnya. Nama modul ditulis di setiap baris.
+
+**Tab `Legend`**: Kategori, Status Progress, Difficulty, Material Source (selalu ada), lalu `legend_extra` dan Alur Belajar dari spec.
+
+Nilai baku (divalidasi generator, spec yang melanggar ditolak):
+- Category: Concept, Setup, Hands-on, Project, Use Case, Capstone, Test, Review / Tanya Jawab
+- Difficulty: Beginner, Intermediate, Advanced, All Levels, TBD
+- Material Source: Internal, External, Blended. Internal atau Blended wajib punya link PPT atau Video. External atau Blended wajib punya External Link.
+- Status: Belum Mulai, Sedang Berjalan, Selesai
 
 ```json
 {
-  "start_here": {
-    "judul": "Onboarding MLE - Dify",
-    "subjudul": "Modul preparation self-study",
-    "items": [["Target peserta", "Junior dan intern MLE"],
-              ["Cara mengerjakan", ["Kerjakan berurutan", "Isi Status", "Kirim bukti ke mentor"]]]
-  },
-  "bagian": [{
-    "blok": "Foundations", "bagian": "Orientasi Dify",
-    "topics": ["Agentic workflow", "Chatflow vs Workflow"],
-    "objective": "Satu kalimat.",
-    "deliverable": ["Akun aktif", "Latihan L1 selesai"],
-    "bukti": "Screenshot", "dataset": "Teks contoh", "materi": "Pengenalan_Dify.pptx",
-    "kriteria": "Sesuai checkpoint L1"
-  }],
-  "materi": [{"file": "Pengenalan_Dify.pptx", "jenis": "Rujukan", "lokasi": "3_Materi_Rujukan/", "bagian": "1"}]
+  "judul": "MLE Program",
+  "alur_belajar": ["Belajar mandiri", "Tanya jawab dengan mentor (on-demand)", "Mini project, lalu Test Modul"],
+  "legend_extra": [{"title": "Mode Belajar", "rows": [["Self-study", "Belajar mandiri"]]}],
+  "modul": [{
+    "nama": "Modul 1: Dify Foundations",
+    "sub_modul": [
+      {"sub_modul": "1.1 Orientasi Dify", "materi": "Agentic workflow, 4 jenis app",
+       "category": "Concept", "objectives": "Satu kalimat atau list", "difficulty": "Beginner",
+       "deliverable": "Akun aktif", "source": "Internal", "ppt": "Pengenalan_Dify.pptx",
+       "video": "", "external": "", "referensi": "", "status": "Belum Mulai"},
+      {"sub_modul": "Test Modul 1", "materi": "Quiz Konsep (1.1-1.x) + Rubrik Mini Project",
+       "category": "Test", "objectives": "Validasi pemahaman Modul 1", "difficulty": "Intermediate",
+       "source": "Internal", "ppt": "MLE_Test_Modul1.pptx"}
+    ]
+  }]
 }
 ```
 
 - Nilai berupa list otomatis menjadi teks multi-baris dengan bullet di dalam satu sel.
-- Kolom default: No, Blok, Bagian, Topics, Objective, Deliverable, Bukti Selesai, Dataset / Sumber, Materi, Kriteria Cek Mentor, Status, Catatan. Jika Brief menentukan kolom lain, tambahkan `"columns": [{"header": "...", "key": "...", "width": 30}]`.
-- Isi kolom Materi harus sama persis dengan nama file di `2_Materi_Baru/` atau `3_Materi_Rujukan/`.
+- Link yang belum tersedia (misalnya video belum direkam) dibiarkan kosong, jangan diisi placeholder. Jika validasi menolak karena link wajib kosong, laporkan ke pengguna, jangan mengarang link.
+- Nama file di kolom Internal Link PPT harus sama persis dengan file di `2_Materi_Baru/` atau `3_Materi_Rujukan/`.
 
 ## Checklist sebelum diserahkan
 

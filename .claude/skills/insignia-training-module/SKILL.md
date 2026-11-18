@@ -9,7 +9,7 @@ Aturan lintas skill ada di `references/aturan-bersama.md`. Baca file itu sebelum
 
 ## Fase 0 - Intake dan pemilihan mode
 
-1. Cari Brief di `briefs/`. Jika pengguna menyebut nama file, baca file itu. Jika menyebut sesi atau nama modul, cari file yang cocok. Jika ada lebih dari satu yang cocok, tanya pengguna.
+1. Cari Brief di `briefs/` termasuk subfolder workstream (misalnya `briefs/Big_Data/`). Jika pengguna menyebut nama file, baca file itu. Jika menyebut sesi atau nama modul, cari file yang cocok. Jika ada lebih dari satu yang cocok, tanya pengguna. Jika di folder yang sama ada `_GLOSARIUM_*.md`, baca juga. Bila glosarium bertentangan dengan kalimat di Brief, glosarium yang berlaku.
 2. Tentukan mode dari baris pertama Brief:
    - `BRIEF LIVE SESSION` (atau format lama `BRIEF SESI`): baca `modes/live-session.md`.
    - `BRIEF PREPARATION`: baca `modes/preparation.md`.

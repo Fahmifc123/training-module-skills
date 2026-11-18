@@ -5,7 +5,7 @@
 | Tahap | Di mana | Hasil |
 |---|---|---|
 | A. Belajar dan brainstorming | Project Claude (claude.ai) | Pemahaman topik, outline, Brief yang disetujui |
-| B. Generate paket materi | Claude Code + repo insignia-training-assets | Paket sesuai mode Brief |
+| B. Generate paket materi | Claude Code + repo training-module-skills | Paket sesuai mode Brief |
 | C. Review dan status | Kembali ke Project | Daftar temuan, Update Status |
 
 Urutan: Belajar, Brief (disetujui), Generate di Claude Code, Review di Project, perbaikan di Claude Code, Update Status.
@@ -15,13 +15,13 @@ Urutan: Belajar, Brief (disetujui), Generate di Claude Code, Review di Project, 
 | | Live Session | Preparation |
 |---|---|---|
 | Untuk | Satu sesi yang dibawakan mentor dan direkam | Modul self-study yang dibagikan (misalnya onboarding via HR) |
-| Nama file | `Brief_Live_<Workstream>_Sesi_NN_<Judul>.md` | `Brief_Preparation_<Nama_Modul>.md` |
+| Nama file | `Brief_Sesi_NN_<Judul>.md` | `Brief_Preparation_<Nama_Program>.md` |
 | Template | `briefs/templates/Brief_Live_Session_TEMPLATE.md` | `briefs/templates/Brief_Preparation_TEMPLATE.md` |
-| Output | 1_PPT, 2_Modul_Praktikum, 3_Starter_Kit_Peserta, 4_Instructor_Only | 1_Modul_Sheet, 2_Materi_Baru, 3_Materi_Rujukan, 4_Mentor_Only |
+| Output | 1_PPT, 2_Modul_Praktikum, 3_Starter_Kit_Peserta, 4_Instructor_Only | 1_Modul_Sheet (format DE), 2_Materi_Baru, 3_Materi_Rujukan, 4_Mentor_Only |
 
-Brief yang sudah dibuat dengan nama lama (`Brief_Sesi_NN_<Judul>.md`, header `BRIEF SESI`) tetap dikenali sebagai Live Session.
+Header lama `BRIEF SESI` tetap dikenali sebagai Live Session. Brief disimpan di `briefs/<Workstream>/`.
 
-Semua bidang Brief wajib diisi sebelum dibawa ke Claude Code. Brief final disimpan di folder `briefs/` pada repo.
+Semua bidang Brief wajib diisi sebelum dibawa ke Claude Code.
 
 ## 3. Format Brief Live Session
 
@@ -51,27 +51,7 @@ Keputusan terbuka:
 
 ## 4. Format Brief Preparation
 
-```
-BRIEF PREPARATION
-
-Workstream:
-Nama modul:
-Deskripsi satu kalimat:
-Target peserta dan prasyarat:
-Cara distribusi:
-Platform dan tools peserta:
-Tujuan modul (maksimal 5):
-Aturan untuk peserta:
-Kebijakan nama klien di materi: <tetap | disamarkan>
-Struktur blok dan bagian (per bagian: Blok, Judul, Topics, Objective, Deliverable, Bukti selesai, Dataset, Materi dipakai ulang atau baru, Kriteria cek mentor):
-Spesifikasi modul sheet (nama file, tab Start here, kolom tab Modul, tab tambahan):
-Materi lama yang dipakai ulang:
-Materi baru yang perlu dibuat:
-Answer key dan rubrik untuk mentor:
-Risiko teknis dan hal yang perlu diverifikasi:
-Istilah yang harus konsisten di semua file:
-Keputusan terbuka:
-```
+Ikuti `briefs/templates/Brief_Preparation_TEMPLATE.md` di repo training-module-skills. Strukturnya per Modul dan Sub Modul, mengikuti kolom modul sheet (format DE): Materi, Category, Learning Objectives, Difficulty, Output / Deliverable, Material Source, link PPT, Video, External, dan Referensi Section. Setiap modul diakhiri Mini Project dan Test Modul.
 
 ## 5. Mode Belajar
 - Mulai dari masalah yang diselesaikan topik tersebut, lalu mekanismenya, lalu tools.
@@ -94,10 +74,10 @@ Live Session:
 
 Preparation:
 - Brief disetujui pengguna
-- Setiap bagian di modul sheet punya Deliverable, Bukti Selesai, dan Kriteria Cek Mentor yang bisa diverifikasi
-- Setiap file di kolom Materi ada di 2_Materi_Baru atau 3_Materi_Rujukan
+- Setiap sub modul punya Learning Objectives dan Output / Deliverable yang bisa diverifikasi; setiap modul diakhiri Test Modul
+- Setiap file di kolom Internal Link PPT ada di 2_Materi_Baru atau 3_Materi_Rujukan
 - Skrip baru dijalankan tanpa error, hasilnya cocok dengan Answer Key
-- Setiap deliverable proyek punya rubrik
+- Setiap Mini Project punya rubrik
 
 Keduanya:
 - Tidak ada emoji, tidak ada label TODO atau placeholder di file yang dilihat peserta atau direkam

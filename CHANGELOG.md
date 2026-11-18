@@ -1,5 +1,20 @@
 # Changelog
 
+## v3.1.0 - 2026-11-18
+
+### Diubah
+- Nama repo menjadi `training-module-skills`.
+- Pola Modul Sheet mengikuti format modul sheet DE: tab Training Modules (13 kolom: Modul sampai Status) dan tab Legend. Pola baris: sub modul, Mini Project, Test Modul, baris kosong antar modul.
+- Generator memvalidasi Category, Difficulty, Material Source, Status, link wajib per Material Source, dan Test Modul di akhir setiap modul.
+- Status baku di kedua pola: Belum Mulai, Sedang Berjalan, Selesai (menggantikan `done` dan `Proses`). Kategori `Test` ditambahkan ke Legend.
+- Template Brief Preparation disusun per Modul dan Sub Modul sesuai kolom sheet.
+- Orkestrator mencari Brief di subfolder `briefs/<Workstream>/` dan membaca `_GLOSARIUM_*.md` bila ada.
+
+### Ditambahkan
+- File root dari kit v2: `insignia_deck_lib.js`, `generate_template_deck.js`, `package.json`, `package-lock.json`.
+- Brief Big Data v3 revisi dan glosarium di `briefs/Big_Data/`.
+- Arsip generator per sesi Big Data di `examples/Big_Data/generators/`.
+
 ## v3.0.0 - 2026-11-12
 
 Perapian kit dan pindah ke repo Git.

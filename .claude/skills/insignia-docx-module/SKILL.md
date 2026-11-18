@@ -34,7 +34,7 @@ Untuk satu bagian modul self-study. Peserta membaca tanpa mentor, jadi ada bagia
 2. Konsep Singkat: 2-5 subjudul, masing-masing satu paragraf pendek.
 3. Persiapan
 4. Langkah Mengerjakan: sama dengan Modul Praktikum, lengkap dengan CHECKPOINT.
-5. Bukti Selesai: harus sama dengan kolom Bukti Selesai di modul sheet.
+5. Bukti Selesai: harus sama dengan kolom Output / Deliverable di modul sheet.
 6. Latihan Mandiri
 
 Spec: `title, subtitle, objectives[], concepts[{heading, body}], prep[], steps[], evidence[], self_practice[]`.
