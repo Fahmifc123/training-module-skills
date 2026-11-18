@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.2.1 - 2026-11-18
+
+### Diubah
+- Orkestrator menyiapkan project root otomatis dari folder kosong: membuat `briefs/`, `materi_rujukan/`, `output/`, menyalin `CLAUDE.md`, `README.md`, `.gitignore` dari template, memindahkan Brief di root ke `briefs/` dan materi lama ke `materi_rujukan/`.
+- Alur project di README dan file 06: cukup folder kosong, file Brief, lalu prompt.
+
 ## v3.2.0 - 2026-11-18
 
 Skill global dan project terpisah dari repo skill.

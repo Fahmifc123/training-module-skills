@@ -34,17 +34,16 @@ Cek: jalankan `claude` di folder mana pun, lalu ketik `/skills`. Ketujuh skill h
 
 ## Alur per project
 
-1. Buat project dari folder repo:
-   ```cmd
-   new_project.bat Onboarding_MLE_Dify
+1. Buat folder kosong di mana saja, lalu jalankan `claude` di folder itu.
+2. Taruh file Brief `.md` dari Project claude.ai langsung di folder itu, bersama materi lama yang dipakai ulang (PPT, docx, zip) bila ada.
+3. Kirim prompt:
    ```
-   Folder dibuat di sebelah repo, berisi `briefs\`, `materi_rujukan\`, `output\`, dan `CLAUDE.md`.
-2. Simpan Brief dari Project claude.ai ke `briefs\`, dan materi lama ke `materi_rujukan\`.
-3. Masuk ke folder project, jalankan `claude`, lalu kirim:
+   Pakai skill insignia-training-module dengan brief <nama_file>.md
    ```
-   Pakai skill insignia-training-module dengan brief briefs/<nama_file>.md
-   ```
+   Orkestrator otomatis membuat `briefs\`, `materi_rujukan\`, `output\`, `CLAUDE.md`, `README.md`, dan `.gitignore`, lalu memindahkan Brief ke `briefs\` dan materi lama ke `materi_rujukan\`.
 4. Hasil tersimpan di `output\` milik project. Bawa ke Project claude.ai untuk Mode Review.
+
+`new_project.bat <Nama>` tetap tersedia untuk membuat folder project di sebelah repo, tapi tidak wajib.
 
 ## Dua mode
 

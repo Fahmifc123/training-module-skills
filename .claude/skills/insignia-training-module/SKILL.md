@@ -11,11 +11,16 @@ Aturan lintas skill ada di `references/aturan-bersama.md`. Baca file itu sebelum
 
 1. Tentukan kit root (`TRAINING_KIT_HOME`) dan project root (folder kerja saat ini). Laporkan keduanya dalam satu baris.
 2. Jika `node_modules/pptxgenjs` tidak ada di kit root dan mode butuh PPT, minta pengguna menjalankan `npm install` di kit root.
-3. Jika project root belum punya folder `briefs/`, `materi_rujukan/`, dan `output/`, buat ketiganya.
+3. Siapkan project root secara otomatis (folder kosong pun boleh), tanpa bertanya:
+   - Buat folder `briefs/`, `materi_rujukan/`, dan `output/` jika belum ada.
+   - Salin `CLAUDE.md`, `README.md`, dan `.gitignore` dari `<kit root>/project-template/` jika belum ada. File yang sudah ada tidak ditimpa.
+   - Pindahkan file Brief yang ditaruh langsung di project root (file `.md` yang baris pertamanya `BRIEF LIVE SESSION`, `BRIEF PREPARATION`, atau `BRIEF SESI`) ke `briefs/`. Pindahkan juga `_GLOSARIUM_*.md` yang ada di root.
+   - Pindahkan file materi lama yang ditaruh di project root (`.pptx`, `.docx`, `.pdf`, `.zip`, `.xlsx`) ke `materi_rujukan/`, kecuali file yang jelas bukan materi (tanya jika ragu).
+   - Laporkan apa saja yang dibuat dan dipindahkan dalam satu daftar singkat.
 
 ## Fase 0 - Intake dan pemilihan mode
 
-1. Cari Brief di `<project root>/briefs/` (termasuk subfolder). Jika pengguna menyebut nama file, baca file itu. Jika menyebut sesi atau nama modul, cari file yang cocok. Jika ada lebih dari satu yang cocok, tanya pengguna. Jika di folder yang sama ada `_GLOSARIUM_*.md`, baca juga. Bila glosarium bertentangan dengan kalimat di Brief, glosarium yang berlaku.
+1. Cari Brief di `<project root>/briefs/` (termasuk subfolder), setelah langkah pemindahan di Cek awal. Jika pengguna menyebut nama file, baca file itu (cari juga di project root jika belum dipindah). Jika menyebut sesi atau nama modul, cari file yang cocok. Jika hanya ada satu Brief, pakai itu. Jika ada lebih dari satu yang cocok, tanya pengguna. Jika di folder yang sama ada `_GLOSARIUM_*.md`, baca juga. Bila glosarium bertentangan dengan kalimat di Brief, glosarium yang berlaku.
 2. Tentukan mode dari baris pertama Brief:
    - `BRIEF LIVE SESSION` (atau format lama `BRIEF SESI`): baca `modes/live-session.md`.
    - `BRIEF PREPARATION`: baca `modes/preparation.md`.

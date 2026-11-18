@@ -24,11 +24,11 @@ Repo skill (kit root) dan folder project (project root) selalu terpisah. Project
 
 ## 3. Prompt untuk paket lengkap
 
-1. Unduh Brief dari Project dan taruh di `<project>\briefs\`. Materi lama yang dipakai ulang taruh di `<project>\materi_rujukan\`.
-2. Jalankan `claude` dari folder project, lalu kirim:
+1. Buat folder kosong untuk project, taruh file Brief (dan materi lama bila ada) langsung di folder itu.
+2. Jalankan `claude` dari folder itu, lalu kirim (folder dan file pendukung disiapkan otomatis):
 
 ```
-Pakai skill insignia-training-module dengan brief briefs/<nama_file>.md
+Pakai skill insignia-training-module dengan brief <nama_file>.md
 ```
 
 Mode dipilih otomatis dari baris pertama Brief:

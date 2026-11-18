@@ -9,5 +9,5 @@
 Jalankan `claude` dari folder ini, lalu:
 
 ```
-Pakai skill insignia-training-module dengan brief briefs/<nama_file>.md
+Pakai skill insignia-training-module dengan brief <nama_file>.md
 ```
