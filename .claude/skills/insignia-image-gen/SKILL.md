@@ -24,13 +24,13 @@ Tidak ada dependency; cukup Python 3 standard library.
 ## Pemakaian
 
 ```bash
-python .claude/skills/insignia-image-gen/unsplash_fetch.py "<query>" <output_dir> [--count 3] [--orientation landscape] [--prefix nama] [--width 1920]
+python "$TRAINING_KIT_HOME/.claude/skills/insignia-image-gen/unsplash_fetch.py" "<query>" <output_dir> [--count 3] [--orientation landscape] [--prefix nama] [--width 1920]
 ```
 
 Contoh, kandidat cover Sesi 6:
 
 ```bash
-python .claude/skills/insignia-image-gen/unsplash_fetch.py "server room" output/<Workstream>/Sesi_06_<Judul>/assets/photos --count 4 --prefix cover-sesi6
+python "$TRAINING_KIT_HOME/.claude/skills/insignia-image-gen/unsplash_fetch.py" "server room" output/Sesi_06_<Judul>/assets/photos --count 4 --prefix cover-sesi6
 ```
 
 Output:
@@ -56,11 +56,11 @@ Keduanya aman diulang dan berhenti rapi saat kuota habis (HTTP 403); jalankan la
 ## Menyisipkan manual ke deck (pptxgenjs)
 
 ```javascript
-const credits = require("./output/<Workstream>/Sesi_06_<Judul>/assets/photos/CREDITS.json");
+const credits = require("./output/Sesi_06_<Judul>/assets/photos/CREDITS.json");
 const c = credits.find((x) => x.file === "cover-sesi6-02.jpg");
 
 slide.addImage({
-  path: "output/<Workstream>/Sesi_06_<Judul>/assets/photos/" + c.file,
+  path: "output/Sesi_06_<Judul>/assets/photos/" + c.file,
   x: 0, y: 0, w: 13.333, h: 7.5,
   sizing: { type: "cover", w: 13.333, h: 7.5 },
 });

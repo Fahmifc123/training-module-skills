@@ -3,16 +3,18 @@
 Dipakai setelah Brief disetujui di Project. Claude Code membuat file jadi dari Brief. Kit disimpan di repo GitHub `training-module-skills`.
 
 ## 1. Setup satu kali
-1. Clone repo: `git clone <url-repo> training-module-skills`, lalu masuk ke folder tersebut.
-2. Jalankan `npm install` dan `pip install python-docx openpyxl`. Playwright hanya jika butuh render HTML ke PNG.
-3. Jalankan `claude` dari root repo. Skill terdeteksi otomatis dari `.claude/skills/`.
-4. Untuk mengambil versi terbaru kit: `git pull`.
+1. Clone repo `https://github.com/Fahmifc123/training-module-skills.git` ke `Documents\github\`.
+2. Jalankan `install_skills.bat` dari folder repo: skill dipasang global (junction ke `%USERPROFILE%\.claude\skills\`), `TRAINING_KIT_HOME` di-set, dan `npm install` dijalankan.
+3. `pip install python-docx openpyxl`, lalu buka ulang terminal.
+4. Update skill: `git pull` di folder repo. Semua project otomatis memakai versi terbaru.
+
+Repo skill (kit root) dan folder project (project root) selalu terpisah. Project dibuat dengan `new_project.bat <Nama>` dan berada di sebelah repo.
 
 ## 2. Isi skill
 
 | Skill | Hasil |
 |---|---|
-| insignia-training-module | Orkestrator dengan dua mode: Live Session dan Preparation |
+| insignia-training-module | Pintu masuk utama. Orkestrator dua mode yang memanggil skill lain |
 | insignia-ppt-deck | Deck .pptx dengan komponen Insignia |
 | insignia-docx-module | .docx: Modul Praktikum (live) dan Panduan Bagian (preparation) |
 | insignia-xlsx-tracker | .xlsx: Tracker operasional dan Modul Sheet |
@@ -22,16 +24,16 @@ Dipakai setelah Brief disetujui di Project. Claude Code membuat file jadi dari B
 
 ## 3. Prompt untuk paket lengkap
 
-1. Unduh Brief dari Project dan taruh di folder `briefs/`.
-2. Kirim prompt ini di Claude Code:
+1. Unduh Brief dari Project dan taruh di `<project>\briefs\`. Materi lama yang dipakai ulang taruh di `<project>\materi_rujukan\`.
+2. Jalankan `claude` dari folder project, lalu kirim:
 
 ```
 Pakai skill insignia-training-module dengan brief briefs/<nama_file>.md
 ```
 
 Mode dipilih otomatis dari baris pertama Brief:
-- `BRIEF LIVE SESSION`: output ke `output/<Workstream>/Sesi_NN_<Judul>/` (1_PPT, 2_Modul_Praktikum, 3_Starter_Kit_Peserta, 4_Instructor_Only).
-- `BRIEF PREPARATION`: output ke `output/<Workstream>/<Nama_Modul>/` (1_Modul_Sheet, 2_Materi_Baru, 3_Materi_Rujukan, 4_Mentor_Only).
+- `BRIEF LIVE SESSION`: output ke `<project>/output/Sesi_NN_<Judul>/` (1_PPT, 2_Modul_Praktikum, 3_Starter_Kit_Peserta, 4_Instructor_Only).
+- `BRIEF PREPARATION`: output ke `<project>/output/<Nama_Program>/` (1_Modul_Sheet format DE, 2_Materi_Baru, 3_Materi_Rujukan, 4_Mentor_Only).
 
 Setiap fase berhenti untuk konfirmasi.
 

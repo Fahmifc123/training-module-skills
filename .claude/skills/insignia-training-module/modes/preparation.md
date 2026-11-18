@@ -5,7 +5,7 @@ Untuk modul self-study yang dibagikan dan dikerjakan mandiri (misalnya modul onb
 ## Struktur output (baku)
 
 ```
-output/<Workstream>/<Nama_Modul>/
+<project root>/output/<Nama_Program>/
   1_Modul_Sheet/      <Nama_Program>_Modul_Preparation_Self_Study.xlsx
   2_Materi_Baru/      Panduan_Bagian_NN_<Judul>.docx, skrip dan file pendukung per bagian
   3_Materi_Rujukan/   salinan materi lama yang dirujuk + Daftar_Materi_Rujukan.md
@@ -30,7 +30,7 @@ Nama file harus sama persis dengan isi kolom Internal Link PPT di modul sheet.
 ## Fase 3 - Materi Rujukan
 
 Untuk setiap bagian yang ditandai `Materi: dipakai ulang`:
-- Salin file yang disebut Brief ke `3_Materi_Rujukan/` (pengguna menyediakan filenya, jangan membuat ulang).
+- Salin file yang disebut Brief dari `<project root>/materi_rujukan/` ke `3_Materi_Rujukan/` (pengguna menyediakan filenya, jangan membuat ulang). Jika file tidak ditemukan, laporkan dan tanya pengguna.
 - Tulis `Daftar_Materi_Rujukan.md`: nama file, bagian modul yang memakainya, bagian file yang perlu dibaca, dan catatan penyesuaian (misalnya padanan istilah antar platform).
 - Jika file rujukan memuat nama klien atau data yang menurut Brief harus disamarkan, laporkan lokasinya dan selesaikan lewat `grill-me`. Jangan mengedit materi lama tanpa persetujuan.
 

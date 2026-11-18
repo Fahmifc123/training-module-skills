@@ -5,7 +5,7 @@ Untuk satu sesi yang dibawakan mentor secara live (dan direkam). Brief memakai h
 ## Struktur output (baku)
 
 ```
-output/<Workstream>/Sesi_NN_<Judul>/
+<project root>/output/Sesi_NN_<Judul>/
   0_Modul_Latihan_Bertingkat/   hanya jika Brief: Latihan Bertingkat = ya
   1_PPT/                        <Judul>.pptx
   2_Modul_Praktikum/            Modul_Praktikum_<Judul>.docx
@@ -14,7 +14,7 @@ output/<Workstream>/Sesi_NN_<Judul>/
                                 notebook SOLUTION, skrip generator dataset
 ```
 
-`<Workstream>` diambil dari Brief (misalnya `Big_Data`). Jangan memakai konvensi folder lain.
+Jangan memakai konvensi folder lain.
 
 ## Fase 1 - PPT
 

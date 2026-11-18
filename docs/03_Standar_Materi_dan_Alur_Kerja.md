@@ -19,7 +19,7 @@ Urutan: Belajar, Brief (disetujui), Generate di Claude Code, Review di Project, 
 | Template | `briefs/templates/Brief_Live_Session_TEMPLATE.md` | `briefs/templates/Brief_Preparation_TEMPLATE.md` |
 | Output | 1_PPT, 2_Modul_Praktikum, 3_Starter_Kit_Peserta, 4_Instructor_Only | 1_Modul_Sheet (format DE), 2_Materi_Baru, 3_Materi_Rujukan, 4_Mentor_Only |
 
-Header lama `BRIEF SESI` tetap dikenali sebagai Live Session. Brief disimpan di `briefs/<Workstream>/`.
+Header lama `BRIEF SESI` tetap dikenali sebagai Live Session. Brief disimpan di folder `briefs/` milik project, bukan di repo skill.
 
 Semua bidang Brief wajib diisi sebelum dibawa ke Claude Code.
 

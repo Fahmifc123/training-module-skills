@@ -1,5 +1,22 @@
 # Changelog
 
+## v3.2.0 - 2026-11-18
+
+Skill global dan project terpisah dari repo skill.
+
+### Ditambahkan
+- `install_skills.bat`: memasang semua skill ke level user Claude Code lewat junction, set `TRAINING_KIT_HOME`, dan `npm install`.
+- `new_project.bat`: membuat folder project selevel repo (`briefs/`, `materi_rujukan/`, `output/`, `CLAUDE.md`).
+- `project-template/` dan `.gitattributes` (file .bat memakai CRLF).
+- Aturan bersama bagian 0: kit root (aset) vs project root (Brief dan output).
+
+### Diubah
+- Orkestrator menjadi pintu masuk utama: deskripsi diperluas, cek awal kit root dan project root, skill turunan wajib dimuat lewat tool Skill.
+- Skill ppt-deck, docx-module, xlsx-tracker merujuk ke orkestrator jika diminta paket lengkap.
+- Generator docx dan xlsx mencari kit root lewat `TRAINING_KIT_HOME`, dengan cadangan lokasi asli skill.
+- Path output menjadi `<project root>/output/<Paket>/`; script dipanggil dengan path lengkap dari kit root.
+- Deck library di-require dari kit root.
+
 ## v3.1.0 - 2026-11-18
 
 ### Diubah

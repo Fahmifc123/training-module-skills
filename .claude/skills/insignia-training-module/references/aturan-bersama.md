@@ -2,6 +2,19 @@
 
 File ini satu-satunya sumber aturan lintas skill. Skill lain merujuk ke sini, jangan menyalin ulang isinya.
 
+## 0. Kit root dan project root
+
+Skill dipasang global (lihat `install_skills.bat` di repo), jadi ada dua lokasi yang berbeda:
+
+- **Kit root**: repo `training-module-skills`. Isinya skill, `brand/`, `insignia_deck_lib.js`, `node_modules/`, dan `briefs/templates/`. Lokasinya dibaca dari environment variable `TRAINING_KIT_HOME`. Jika variabel itu kosong, kit root adalah folder tiga tingkat di atas folder skill ini setelah symlink atau junction di-resolve. Jika keduanya gagal, tanya pengguna.
+- **Project root**: folder tempat `claude` dijalankan. Isinya `briefs/`, `materi_rujukan/`, dan `output/` milik project itu.
+
+Aturan:
+- Baca aset (brand, template, deck lib) dari kit root. Tulis semua hasil ke project root.
+- Jangan pernah menulis output, Brief, atau file project ke dalam kit root.
+- Panggil script skill dengan path lengkap dari kit root, misalnya `python "$TRAINING_KIT_HOME/.claude/skills/insignia-xlsx-tracker/generate_xlsx.py" ...` (Git Bash) atau `python "%TRAINING_KIT_HOME%\.claude\skills\..."` (CMD).
+- Jika project root sama dengan kit root, ingatkan pengguna bahwa project sebaiknya dibuat di folder terpisah (`new_project.bat`), lalu tanya apakah tetap mau lanjut.
+
 ## 1. Bahasa dan gaya
 
 - Bahasa Indonesia sebagai bahasa utama. Istilah teknis, nama tool, dan nama tombol UI tetap bahasa Inggris sesuai tampilan aslinya.
@@ -23,9 +36,9 @@ File ini satu-satunya sumber aturan lintas skill. Skill lain merujuk ke sini, ja
 
 ## 4. Brand
 
-- Warna dan font hanya dari `brand/colors.json`. Logo dari `brand/logo-light-bg.png` dan `brand/logo-dark-bg.png`.
-- Baca `colors.json` dari kode (jangan hardcode warna). Path dihitung dari root repo: `<root>/brand/colors.json`.
-- Acuan visual deck: `brand/slide-templates/Template_Training_Insignia.pdf`.
+- Warna dan font hanya dari `<kit root>/brand/colors.json`. Logo dari `<kit root>/brand/logo-light-bg.png` dan `logo-dark-bg.png`.
+- Baca `colors.json` dari kode (jangan hardcode warna). Generator bawaan sudah mencari kit root sendiri.
+- Acuan visual deck: `<kit root>/brand/slide-templates/Template_Training_Insignia.pdf`.
 
 ## 5. Konsistensi paket
 
@@ -35,8 +48,7 @@ File ini satu-satunya sumber aturan lintas skill. Skill lain merujuk ke sini, ja
 
 ## 6. Path output
 
-- Semua output ditulis ke `output/<Workstream>/...`, dengan struktur folder sesuai mode di `modes/`.
-- Folder `output/` tidak di-commit ke repo.
+- Semua output ditulis ke `<project root>/output/<Paket>/...`, dengan struktur folder sesuai mode di `modes/`. `<Paket>` adalah `Sesi_NN_<Judul>` (Live Session) atau `<Nama_Program>` (Preparation).
 
 ## 7. Keputusan manusia
 

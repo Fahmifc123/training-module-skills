@@ -5,7 +5,9 @@ description: Buat slide deck PowerPoint (.pptx) untuk materi training Insignia m
 
 # Insignia PPT Deck
 
-Deck dibuat dengan memanggil komponen di `insignia_deck_lib.js` (root project). Jangan menulis ulang geometri slide dari nol. Library sudah meniru deck asli `AI-DLC_Internal_Training_Insignia.pptx`.
+Jika pengguna meminta paket lengkap atau menyebut Brief, gunakan `insignia-training-module` sebagai pintu masuk; skill ini dipanggil olehnya.
+
+Deck dibuat dengan memanggil komponen di `insignia_deck_lib.js` (kit root). Jangan menulis ulang geometri slide dari nol. Library sudah meniru deck asli `AI-DLC_Internal_Training_Insignia.pptx`.
 
 Acuan visual wajib dilihat sebelum menyusun deck:
 - `brand/slide-templates/Template_Training_Insignia.pdf` (15 slide, satu komponen per slide)
@@ -73,7 +75,8 @@ Untuk layout custom di atas `addContentSlide`, pakai util `L.card(slide, x, y, w
 
 ```javascript
 const path = require("path");
-const L = require("./insignia_deck_lib.js");
+const KIT = process.env.TRAINING_KIT_HOME;  // kit root, lihat aturan bersama bagian 0
+const L = require(path.join(KIT, "insignia_deck_lib.js"));
 
 async function main() {
   const pptx = L.newDeck("Contoh Workstream - Sesi 1");
@@ -87,7 +90,7 @@ async function main() {
     ],
   });
   L.addThankYouSlide(pptx, { contact: "Kontak: Mentor Data & AI" });
-  await L.save(pptx, path.join(__dirname, "output", "Contoh_Workstream", "Sesi_01_Judul_Sesi", "1_PPT", "Judul_Sesi.pptx"));
+  await L.save(pptx, path.join(process.cwd(), "output", "Sesi_01_Judul_Sesi", "1_PPT", "Judul_Sesi.pptx"));
 }
 main();
 ```
@@ -99,7 +102,7 @@ main();
 - Total durasi agenda sama dengan Brief dan cocok dengan alur slide.
 - Kode di code slide sudah dijalankan dan output-nya cocok dengan checkpoint dan Answer Key.
 - Deck dirender ke gambar (LibreOffice ke PDF ke PNG) dan dicek: tidak ada teks terpotong, tumpang tindih, atau kata terpecah di dua baris.
-- File output ditulis ke `output/<Workstream>/Sesi_NN_<Judul>/1_PPT/`.
+- File output ditulis ke `<project root>/output/Sesi_NN_<Judul>/1_PPT/`. Script generator deck disimpan di project root, bukan di kit root.
 
 ## Aturan bersama
 

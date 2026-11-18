@@ -5,10 +5,11 @@ Pemakaian:
     python .claude/skills/insignia-xlsx-tracker/generate_xlsx.py modul-sheet <spec.json> <output.xlsx>
     python .claude/skills/insignia-xlsx-tracker/generate_xlsx.py demo <output_dir>
 
-Format spec.json dijelaskan di SKILL.md. Warna dibaca dari <root repo>/brand/colors.json.
+Format spec.json dijelaskan di SKILL.md. Warna dibaca dari <kit root>/brand/colors.json (lihat aturan bersama bagian 0).
 """
 import argparse
 import json
+import os
 from pathlib import Path
 
 from openpyxl import Workbook
@@ -17,7 +18,21 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+
+
+def find_kit_root() -> Path:
+    """Kit root: TRAINING_KIT_HOME, atau tiga tingkat di atas folder skill (junction/symlink di-resolve)."""
+    candidates = []
+    if os.environ.get("TRAINING_KIT_HOME"):
+        candidates.append(Path(os.environ["TRAINING_KIT_HOME"]))
+    candidates.append(Path(os.path.realpath(__file__)).parents[3])
+    for root in candidates:
+        if (root / "brand" / "colors.json").exists():
+            return root
+    raise SystemExit("Kit root tidak ditemukan. Set TRAINING_KIT_HOME ke folder repo training-module-skills.")
+
+
+REPO_ROOT = find_kit_root()
 COLORS = json.loads((REPO_ROOT / "brand" / "colors.json").read_text(encoding="utf-8"))
 FONT = COLORS.get("font_body", "Arial")
 THIN = Side(style="thin", color="D0D0D0")

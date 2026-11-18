@@ -5,10 +5,11 @@ Pemakaian:
     python .claude/skills/insignia-docx-module/generate_docx.py panduan-bagian <spec.json> <output.docx>
     python .claude/skills/insignia-docx-module/generate_docx.py demo <output_dir>
 
-Format spec.json dijelaskan di SKILL.md. Warna dan font dibaca dari <root repo>/brand/colors.json.
+Format spec.json dijelaskan di SKILL.md. Warna dan font dibaca dari <kit root>/brand/colors.json (lihat aturan bersama bagian 0).
 """
 import argparse
 import json
+import os
 from pathlib import Path
 
 from docx import Document
@@ -17,7 +18,21 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Pt, RGBColor
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+
+
+def find_kit_root() -> Path:
+    """Kit root: TRAINING_KIT_HOME, atau tiga tingkat di atas folder skill (junction/symlink di-resolve)."""
+    candidates = []
+    if os.environ.get("TRAINING_KIT_HOME"):
+        candidates.append(Path(os.environ["TRAINING_KIT_HOME"]))
+    candidates.append(Path(os.path.realpath(__file__)).parents[3])
+    for root in candidates:
+        if (root / "brand" / "colors.json").exists():
+            return root
+    raise SystemExit("Kit root tidak ditemukan. Set TRAINING_KIT_HOME ke folder repo training-module-skills.")
+
+
+REPO_ROOT = find_kit_root()
 COLORS = json.loads((REPO_ROOT / "brand" / "colors.json").read_text(encoding="utf-8"))
 FONT = COLORS.get("font_body", "Arial")
 FONT_CODE = COLORS.get("font_code", "Courier New")

@@ -5,16 +5,18 @@ description: Buat atau update file Excel (.xlsx) Insignia memakai openpyxl denga
 
 # Insignia Excel (Tracker dan Modul Sheet)
 
+Jika pengguna meminta paket lengkap atau menyebut Brief, gunakan `insignia-training-module` sebagai pintu masuk; skill ini dipanggil olehnya.
+
 Generator ada di `generate_xlsx.py` (folder skill ini). Jangan menulis ulang helper styling. Cukup siapkan `spec.json`, lalu jalankan generator.
 
 ```bash
 pip install openpyxl
-python .claude/skills/insignia-xlsx-tracker/generate_xlsx.py demo output/_demo          # uji cepat
-python .claude/skills/insignia-xlsx-tracker/generate_xlsx.py tracker spec.json output/<Workstream>/<nama>.xlsx
-python .claude/skills/insignia-xlsx-tracker/generate_xlsx.py modul-sheet spec.json output/<Workstream>/<Nama_Modul>/1_Modul_Sheet/<Nama_Modul>.xlsx
+python "$TRAINING_KIT_HOME/.claude/skills/insignia-xlsx-tracker/generate_xlsx.py" demo output/_demo          # uji cepat
+python "$TRAINING_KIT_HOME/.claude/skills/insignia-xlsx-tracker/generate_xlsx.py" tracker spec.json output/<nama>.xlsx
+python "$TRAINING_KIT_HOME/.claude/skills/insignia-xlsx-tracker/generate_xlsx.py" modul-sheet spec.json output/<Nama_Program>/1_Modul_Sheet/<Nama_Modul>.xlsx
 ```
 
-Warna dan font dibaca otomatis dari `brand/colors.json` di root repo.
+Warna dan font dibaca otomatis dari `<kit root>/brand/colors.json`. Path output relatif terhadap project root.
 
 ## Aturan konten
 
@@ -84,7 +86,7 @@ Nilai baku (divalidasi generator, spec yang melanggar ditolak):
 - Generator berjalan tanpa error.
 - File dibuka (atau dirender ke PDF lewat LibreOffice) dan dicek: tidak ada teks terpotong, tinggi baris cukup.
 - Status berupa dropdown dengan warna yang benar.
-- Output ada di `output/<Workstream>/...` sesuai mode.
+- Output ada di `<project root>/output/...` sesuai mode.
 
 ## Aturan bersama
 

@@ -10,7 +10,7 @@ Skill ini merender file `.html` menjadi `.png` memakai `Playwright` (headless br
 ## Aturan konten
 
 - Resolusi default mengikuti rasio slide 16:9 (1920x1080) kecuali diminta ukuran lain.
-- Kalau HTML memuat font custom, pastikan font di-load dari `brand/fonts/` (lihat bagian embedding font di bawah) supaya render konsisten, bukan fallback ke font sistem.
+- Kalau HTML memuat font custom, pastikan font di-load dari `<kit root>/brand/fonts/` (lihat bagian embedding font di bawah) supaya render konsisten, bukan fallback ke font sistem.
 - Tanpa emoji/icon dekoratif di hasil render untuk materi formal.
 - Warna di HTML sumber sebaiknya mengacu ke `brand/colors.json` supaya hasil PNG konsisten dengan PPT dan Excel.
 
@@ -85,7 +85,7 @@ main().catch((err) => {
 
 ## Embedding font custom di HTML sumber
 
-Kalau HTML yang akan dirender butuh font dari `brand/fonts/`, load lewat `@font-face` dengan path relatif/absolut ke file font tersebut:
+Kalau HTML yang akan dirender butuh font dari `<kit root>/brand/fonts/`, load lewat `@font-face` dengan path relatif/absolut ke file font tersebut:
 
 ```html
 <style>
@@ -143,7 +143,7 @@ module.exports = { batchRender };
 - Resolusi sesuai kebutuhan (default 1920x1080 untuk slide).
 - Font custom (kalau dipakai) ter-load sempurna, bukan fallback — cek hasil render secara visual.
 - Warna di hasil render konsisten dengan `brand/colors.json`.
-- File output ditulis ke `output/<nama-modul>/`.
+- File output ditulis ke `<project root>/output/<Paket>/`.
 
 ## Aturan bersama
 

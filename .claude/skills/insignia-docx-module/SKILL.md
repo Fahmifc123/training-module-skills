@@ -5,16 +5,18 @@ description: Buat dokumen .docx training Insignia dengan dua struktur. Modul Pra
 
 # Insignia DOCX (Modul Praktikum dan Panduan Bagian)
 
+Jika pengguna meminta paket lengkap atau menyebut Brief, gunakan `insignia-training-module` sebagai pintu masuk; skill ini dipanggil olehnya.
+
 Generator ada di `generate_docx.py` (folder skill ini). Jangan menulis ulang helper styling. Cukup siapkan `spec.json`, lalu jalankan generator.
 
 ```bash
 pip install python-docx
-python .claude/skills/insignia-docx-module/generate_docx.py demo output/_demo
-python .claude/skills/insignia-docx-module/generate_docx.py modul-praktikum spec.json output/<Workstream>/Sesi_NN_<Judul>/2_Modul_Praktikum/Modul_Praktikum_<Judul>.docx
-python .claude/skills/insignia-docx-module/generate_docx.py panduan-bagian spec.json output/<Workstream>/<Nama_Modul>/2_Materi_Baru/Panduan_Bagian_NN_<Judul>.docx
+python "$TRAINING_KIT_HOME/.claude/skills/insignia-docx-module/generate_docx.py" demo output/_demo
+python "$TRAINING_KIT_HOME/.claude/skills/insignia-docx-module/generate_docx.py" modul-praktikum spec.json output/Sesi_NN_<Judul>/2_Modul_Praktikum/Modul_Praktikum_<Judul>.docx
+python "$TRAINING_KIT_HOME/.claude/skills/insignia-docx-module/generate_docx.py" panduan-bagian spec.json output/<Nama_Program>/2_Materi_Baru/Panduan_Bagian_NN_<Judul>.docx
 ```
 
-Warna, font, dan logo dibaca otomatis dari `brand/`.
+Warna, font, dan logo dibaca otomatis dari `<kit root>/brand/`. Path output relatif terhadap project root.
 
 ## Struktur 1 - Modul Praktikum (mode Live Session)
 
